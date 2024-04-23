@@ -18,15 +18,56 @@ OneTrain est une application conçue pour les jeunes joueurs de football ainsi q
 - Frontend : HTML, CSS, JavaScript
 - Backend : Python, Flask
 - Base de données : MariaDB avec phpMyAdmin
-
 ## Installation
-1. Clonez le repository :- `git clone git@github.com:josegcpedro/OneTrain.git`
-2. Créez un environnement virtuel : `python3 -m venv .venv`
-3. Activez l'environnement virtuel :
-   - Sur Linux/macOS : `source .venv/bin/activate`
-   - Sur Windows : `.venv\Scripts\activate`
-4. Mettez à jour pip : `python -m pip install --upgrade pip`
-5. Installez les dépendances : `pip install -r requirements.txt`
+
+1. Clonez le repository : 
+    ```bash
+    git clone git@github.com:OneTrain-app/OneTrain.git OneTrain
+    ```
+2. Accedez au projet :
+    ```bash
+    cd OneTrain
+    ```
+   
+3. Désactivez git :
+   - Sur Linux/macOS : 
+        ```bash
+        rm -rf .git
+        ```
+    - Sur Windows : 
+        ```powershell
+        rmdir /s .git
+        ```
+
+4. Créez un environnement virtuel : 
+    ```bash
+    python3 -m venv .venv
+    ```
+   
+5. Activez l'environnement virtuel :
+    - Sur Linux/macOS : 
+        ```bash
+        source .venv/bin/activate
+        ```
+    - Sur Windows : 
+        ```powershell
+        .venv\Scripts\activate
+        ```
+
+6. Mettez à jour pip : 
+    ```bash
+    python -m pip install --upgrade pip
+    ```
+
+7. Installez les dépendances : 
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+8. Pour lancer docker : 
+    ```bash
+    docker-compose up
+    ```
 
 ## Contributeurs
 - José Gomes
