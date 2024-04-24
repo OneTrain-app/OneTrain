@@ -9,7 +9,7 @@ try:
     """
         Une seule requête pour montrer la récupération des données de la BD en MySql.
     """
-    strsql_genres_afficher = """SELECT * from T_Personne"""
+    strsql_genres_afficher = """SELECT * from T_Credentials """
 
     with DBconnection() as db:
         db.execute(strsql_genres_afficher)
