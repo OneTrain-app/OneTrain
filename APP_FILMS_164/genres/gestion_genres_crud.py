@@ -34,20 +34,31 @@ def genres_afficher(order_by, id_genre_sel):
         try:
             with DBconnection() as mc_afficher:
                 if order_by == "ASC" and id_genre_sel == 0:
-                    strsql_genres_afficher = """SELECT * from T_Personne"""
+                    strsql_genres_afficher = """
+                    SELECT T_Personne.id_Personne, T_Personne.Nom, T_Personne.Prenom, T_Credentials.Password, T_Credentials.Email 
+                    FROM T_Personne 
+                    INNER JOIN T_Credentials ON T_Personne.ID_Credentials = T_Credentials.ID_Credentials
+                    """
                     mc_afficher.execute(strsql_genres_afficher)
                 elif order_by == "ASC":
-
                     valeur_id_genre_selected_dictionnaire = {"value_id_Personne_selected": id_genre_sel}
-                    strsql_genres_afficher = """SELECT id_Personne, Nom, Prenom FROM T_Personne WHERE id_Personne = %(value_id_Personne_selected)s"""
+                    strsql_genres_afficher = """
+                    SELECT T_Personne.id_Personne, T_Personne.Nom, T_Personne.Prenom, T_Credentials.Password, T_Credentials.Email 
+                    FROM T_Personne 
+                    INNER JOIN T_Credentials ON T_Personne.ID_Credentials = T_Credentials.ID_Credentials
+                    WHERE T_Personne.id_Personne = %(value_id_Personne_selected)s
+                    """
                     mc_afficher.execute(strsql_genres_afficher, valeur_id_genre_selected_dictionnaire)
                 else:
-                    
-                    strsql_genres_afficher = """SELECT id_Personne, Nom, Prenom FROM T_Personne ORDER BY id_Personne DESC"""
+                    strsql_genres_afficher = """
+                    SELECT T_Personne.id_Personne, T_Personne.Nom, T_Personne.Prenom, T_Credentials.Password, T_Credentials.Email 
+                    FROM T_Personne 
+                    INNER JOIN T_Credentials ON T_Personne.ID_Credentials = T_Credentials.ID_Credentials
+                    ORDER BY T_Personne.id_Personne DESC
+                    """
                     mc_afficher.execute(strsql_genres_afficher)
 
                 data_genres = mc_afficher.fetchall()
-
 
                 if not data_genres and id_genre_sel == 0:
                     flash("""La table est vide mon gars. !!""", "warning")
@@ -61,8 +72,8 @@ def genres_afficher(order_by, id_genre_sel):
                                           f"{genres_afficher.__name__}; "
                                           f"{Exception_genres_afficher}")
 
-    # Envia a página "HTML" ao servidor
     return render_template("genres/genres_afficher.html", data=data_genres)
+
 
 
 """
@@ -97,24 +108,9 @@ def genres_ajouter_wtf():
                 password = form.Password_wtf.data
                 nom = form.Nom_wtf.data
 
-                # Insérer les données dans la table T_Personne
-                strsql_insert_personne = """INSERT INTO T_Personne (Prenom, ID_Role, Nom) 
-                            VALUES (%(prenom)s, %(id_role)s, %(nom)s)"""
-                valeurs_insertion_personne = {
-                    "prenom": prenom,
-                    "id_role": id_role,
-                    "nom": nom
-                }
-                with DBconnection() as mconn_bd:
-                    mconn_bd.execute(strsql_insert_personne, valeurs_insertion_personne)
-
-                # Récupérer l'ID inséré dans T_Personne
-                id_personne_inseree = mconn_bd.lastrowid
-
                 # Insérer les données dans la table T_Credentials
                 strsql_insert_credentials = """INSERT INTO T_Credentials (Email, Password) 
                             VALUES (%(mail)s, %(password)s)"""
-
 
                 valeurs_insertion_credentials = {
                     "mail": mail,
@@ -122,6 +118,20 @@ def genres_ajouter_wtf():
                 }
                 with DBconnection() as mconn_bd:
                     mconn_bd.execute(strsql_insert_credentials, valeurs_insertion_credentials)
+                    id_credentials_inseree = mconn_bd.lastrowid
+
+                # Insérer les données dans la table T_Personne
+                strsql_insert_personne = """INSERT INTO T_Personne (Prenom, ID_Role, Nom, ID_Credentials) 
+                            VALUES (%(prenom)s, %(id_role)s, %(nom)s, %(id_credentials)s)"""
+
+                valeurs_insertion_personne = {
+                    "prenom": prenom,
+                    "id_role": id_role,
+                    "nom": nom,
+                    "id_credentials": id_credentials_inseree
+                }
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(strsql_insert_personne, valeurs_insertion_personne)
 
                 flash(f"Données insérées !!", "success")
 
