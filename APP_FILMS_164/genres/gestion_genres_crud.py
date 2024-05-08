@@ -37,30 +37,27 @@ def genres_afficher(order_by, id_genre_sel):
                     strsql_genres_afficher = """SELECT * from T_Personne"""
                     mc_afficher.execute(strsql_genres_afficher)
                 elif order_by == "ASC":
-                    # Correção da consulta SQL para selecionar uma pessoa específica com base no ID da Pessoa
+
                     valeur_id_genre_selected_dictionnaire = {"value_id_Personne_selected": id_genre_sel}
                     strsql_genres_afficher = """SELECT id_Personne, Nom, Prenom FROM T_Personne WHERE id_Personne = %(value_id_Personne_selected)s"""
                     mc_afficher.execute(strsql_genres_afficher, valeur_id_genre_selected_dictionnaire)
                 else:
-                    # Correção da consulta SQL para selecionar todos os registros da tabela ordenados pelo ID de Pessoa de forma decrescente
+                    
                     strsql_genres_afficher = """SELECT id_Personne, Nom, Prenom FROM T_Personne ORDER BY id_Personne DESC"""
                     mc_afficher.execute(strsql_genres_afficher)
 
                 data_genres = mc_afficher.fetchall()
 
-                # Dados de depuração não são mais necessários
-                # print("data_genres ", data_genres, " Type : ", type(data_genres))
 
-                # Diferenciação de mensagens se a tabela estiver vazia
                 if not data_genres and id_genre_sel == 0:
-                    flash("""A tabela "T_Personne" está vazia. !!""", "warning")
+                    flash("""La table est vide mon gars. !!""", "warning")
                 elif not data_genres and id_genre_sel > 0:
-                    flash(f"A pessoa solicitada não existe !!", "warning")
+                    flash(f"Tu cherches qui wsh???!!", "warning")
                 else:
-                    flash(f"Aqui estão as pessoas !!", "success")
+                    flash(f"Voici les gens mon ami <3 !!", "success")
 
         except Exception as Exception_genres_afficher:
-            raise ExceptionGenresAfficher(f"Arquivo: {Path(__file__).name}; "
+            raise ExceptionGenresAfficher(f"Archive: {Path(__file__).name}; "
                                           f"{genres_afficher.__name__}; "
                                           f"{Exception_genres_afficher}")
 
@@ -94,27 +91,49 @@ def genres_ajouter_wtf():
     if request.method == "POST":
         try:
             if form.validate_on_submit():
-                name_genre_wtf = form.nom_genre_wtf.data
-                name_genre = name_genre_wtf.lower()
-                valeurs_insertion_dictionnaire = {"value_intitule_genre": name_genre}
-                print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
+                prenom = form.Prenom_wtf.data
+                id_role = form.id_role_wtf.data
+                mail = form.Mail_wtf.data
+                password = form.Password_wtf.data
+                nom = form.Nom_wtf.data
 
-                strsql_insert_genre = """INSERT INTO T_Personne (Id_Personne,Nom) VALUES (NULL,%(value_intitule_genre)s) """
+                # Insérer les données dans la table T_Personne
+                strsql_insert_personne = """INSERT INTO T_Personne (Prenom, ID_Role, Nom) 
+                            VALUES (%(prenom)s, %(id_role)s, %(nom)s)"""
+                valeurs_insertion_personne = {
+                    "prenom": prenom,
+                    "id_role": id_role,
+                    "nom": nom
+                }
                 with DBconnection() as mconn_bd:
-                    mconn_bd.execute(strsql_insert_genre, valeurs_insertion_dictionnaire)
+                    mconn_bd.execute(strsql_insert_personne, valeurs_insertion_personne)
+
+                # Récupérer l'ID inséré dans T_Personne
+                id_personne_inseree = mconn_bd.lastrowid
+
+                # Insérer les données dans la table T_Credentials
+                strsql_insert_credentials = """INSERT INTO T_Credentials (Email, Password) 
+                            VALUES (%(mail)s, %(password)s)"""
+
+
+                valeurs_insertion_credentials = {
+                    "mail": mail,
+                    "password": password,
+                }
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(strsql_insert_credentials, valeurs_insertion_credentials)
 
                 flash(f"Données insérées !!", "success")
-                print(f"Données insérées !!")
 
-                # Pour afficher et constater l'insertion de la valeur, on affiche en ordre inverse. (DESC)
+                # Rediriger vers la page d'affichage des genres
                 return redirect(url_for('genres_afficher', order_by='DESC', id_genre_sel=0))
 
-        except Exception as Exception_genres_ajouter_wtf:
-            raise ExceptionGenresAjouterWtf(f"fichier : {Path(__file__).name}  ;  "
-                                            f"{genres_ajouter_wtf.__name__} ; "
-                                            f"{Exception_genres_ajouter_wtf}")
+        except Exception as e:
+            flash(f"Une erreur s'est produite : {str(e)}", "error")
 
     return render_template("genres/genres_ajouter_wtf.html", form=form)
+
+
 
 
 """
@@ -209,85 +228,80 @@ def genre_update_wtf():
                 le contrôle de la saisie est désactivée. On doit simplement cliquer sur "DELETE"
 """
 
-
 @app.route("/genre_delete", methods=['GET', 'POST'])
 def genre_delete_wtf():
-    data_films_attribue_genre_delete = None
+    data_credentials_associated_person_delete = None
     btn_submit_del = None
-    # L'utilisateur vient de cliquer sur le bouton "DELETE". Récupère la valeur de "id_genre"
-    id_genre_delete = request.values['id_genre_btn_delete_html']
+    
+    # L'utilisateur vient de cliquer sur le bouton "DELETE". Récupère la valeur de "id_personne"
+    id_personne_delete = request.values['id_genre_btn_delete_html']
 
-    # Objet formulaire pour effacer le genre sélectionné.
+    # Objet formulaire pour effacer la personne sélectionnée.
     form_delete = FormWTFDeleteGenre()
     try:
-        print(" on submit ", form_delete.validate_on_submit())
         if request.method == "POST" and form_delete.validate_on_submit():
 
             if form_delete.submit_btn_annuler.data:
                 return redirect(url_for("genres_afficher", order_by="ASC", id_genre_sel=0))
 
             if form_delete.submit_btn_conf_del.data:
-                # Récupère les données afin d'afficher à nouveau
-                # le formulaire "genres/genre_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
-                data_films_attribue_genre_delete = session['data_films_attribue_genre_delete']
-                print("data_films_attribue_genre_delete ", data_films_attribue_genre_delete)
-
-                flash(f"Effacer le genre de façon définitive de la BD !!!", "danger")
-                # L'utilisateur vient de cliquer sur le bouton de confirmation pour effacer...
-                # On affiche le bouton "Effacer genre" qui va irrémédiablement EFFACER le genre
+                # Récupérer les données pour afficher à nouveau
+                # le formulaire "genres/genre_delete_wtf.html" lorsque le bouton "Etes-vous sûr de vouloir effacer ?" est cliqué.
+                data_credentials_associated_person_delete = session['data_credentials_associated_person_delete']
+                flash(f"Effacer la personne définitivement de la base de données !!!", "danger")
                 btn_submit_del = True
 
             if form_delete.submit_btn_del.data:
-                valeur_delete_dictionnaire = {"value_id_genre": id_genre_delete}
-                print("valeur_delete_dictionnaire ", valeur_delete_dictionnaire)
+                valeur_delete_dictionnaire = {"value_Id_Personne": id_personne_delete}
 
-                str_sql_delete_films_genre = """DELETE FROM t_genre_film WHERE fk_genre = %(value_id_genre)s"""
-                str_sql_delete_idgenre = """DELETE FROM t_genre WHERE id_genre = %(value_id_genre)s"""
-                # Manière brutale d'effacer d'abord la "fk_genre", même si elle n'existe pas dans la "t_genre_film"
-                # Ensuite on peut effacer le genre vu qu'il n'est plus "lié" (INNODB) dans la "t_genre_film"
+                # Requêtes SQL pour supprimer toutes les informations liées au nom de la personne dans toutes les tables associées
+                str_sql_delete_personne_credentials = """DELETE FROM T_Personne_Credentials WHERE fk_personne = %(value_Id_Personne)s"""
+                str_sql_delete_personne = """DELETE FROM T_Personne WHERE id_personne = %(value_Id_Personne)s"""
+                # Ajoutez d'autres requêtes de suppression pour chaque table associée à la personne ici
+                
+                # Exécution des requêtes SQL
                 with DBconnection() as mconn_bd:
-                    mconn_bd.execute(str_sql_delete_films_genre, valeur_delete_dictionnaire)
-                    mconn_bd.execute(str_sql_delete_idgenre, valeur_delete_dictionnaire)
+                    mconn_bd.execute(str_sql_delete_personne_credentials, valeur_delete_dictionnaire)
+                    mconn_bd.execute(str_sql_delete_personne, valeur_delete_dictionnaire)
+                    # Exécutez les autres requêtes de suppression ici
+                
+                flash(f"Toutes les informations liées à la personne ont été définitivement effacées !!", "success")
 
-                flash(f"Genre définitivement effacé !!", "success")
-                print(f"Genre définitivement effacé !!")
-
-                # afficher les données
+                # Afficher les données
                 return redirect(url_for('genres_afficher', order_by="ASC", id_genre_sel=0))
 
         if request.method == "GET":
-            valeur_select_dictionnaire = {"value_id_genre": id_genre_delete}
-            print(id_genre_delete, type(id_genre_delete))
+            valeur_select_dictionnaire = {"value_id_personne": id_personne_delete}
 
-            # Requête qui affiche tous les films_genres qui ont le genre que l'utilisateur veut effacer
-            str_sql_genres_films_delete = """SELECT id_genre_film, nom_film, id_genre, intitule_genre FROM t_genre_film 
-                                            INNER JOIN t_film ON t_genre_film.fk_film = t_film.id_film
-                                            INNER JOIN t_genre ON t_genre_film.fk_genre = t_genre.id_genre
-                                            WHERE fk_genre = %(value_id_genre)s"""
+            # Requête pour obtenir toutes les informations associées à la personne que l'utilisateur veut effacer
+            str_sql_personne_credentials_delete = """SELECT T_Personne.id_personne, T_Personne.nom, T_Personne.prenom, T_Credentials.id_credentials 
+                                         FROM T_Personne 
+                                         INNER JOIN T_Personne_Credentials 
+                                         ON T_Personne.id_personne = T_Personne_Credentials.fk_personne
+                                         INNER JOIN T_Credentials 
+                                         ON T_Personne_Credentials.fk_credentials = T_Credentials.id_credentials
+                                         WHERE T_Personne.id_personne = %(value_id_personne)s"""
+
 
             with DBconnection() as mydb_conn:
-                mydb_conn.execute(str_sql_genres_films_delete, valeur_select_dictionnaire)
-                data_films_attribue_genre_delete = mydb_conn.fetchall()
-                print("data_films_attribue_genre_delete...", data_films_attribue_genre_delete)
+                mydb_conn.execute(str_sql_personne_credentials_delete, valeur_select_dictionnaire)
+                data_credentials_associated_person_delete = mydb_conn.fetchall()
 
-                # Nécessaire pour mémoriser les données afin d'afficher à nouveau
-                # le formulaire "genres/genre_delete_wtf.html" lorsque le bouton "Etes-vous sur d'effacer ?" est cliqué.
-                session['data_films_attribue_genre_delete'] = data_films_attribue_genre_delete
+                # Mémoriser les données pour afficher à nouveau
+                # le formulaire "genres/genre_delete_wtf.html" lorsque le bouton "Etes-vous sûr de vouloir effacer ?" est cliqué.
+                session['data_credentials_associated_person_delete'] = data_credentials_associated_person_delete
 
-                # Opération sur la BD pour récupérer "id_genre" et "intitule_genre" de la "t_genre"
-                str_sql_id_genre = "SELECT id_genre, intitule_genre FROM t_genre WHERE id_genre = %(value_id_genre)s"
+                # Opération sur la BD pour récupérer les informations de la personne
+                str_sql_personne_info = "SELECT id_personne, nom, prenom FROM T_Personne WHERE id_personne = %(value_id_personne)s"
+                mydb_conn.execute(str_sql_personne_info, valeur_select_dictionnaire)
+                data_personne_info = mydb_conn.fetchone()
 
-                mydb_conn.execute(str_sql_id_genre, valeur_select_dictionnaire)
-                # Une seule valeur est suffisante "fetchone()",
-                # vu qu'il n'y a qu'un seul champ "nom genre" pour l'action DELETE
-                data_nom_genre = mydb_conn.fetchone()
-                print("data_nom_genre ", data_nom_genre, " type ", type(data_nom_genre), " genre ",
-                      data_nom_genre["intitule_genre"])
+            # Vérifier si les informations de la personne existent
+            if data_personne_info is not None:
+                # Afficher les informations de la personne sélectionnée dans le formulaire "genre_delete_wtf.html"
+                form_delete.nom_personne_delete_wtf.data = data_personne_info["nom"]
+                form_delete.prenom_personne_delete_wtf.data = data_personne_info["prenom"]
 
-            # Afficher la valeur sélectionnée dans le champ du formulaire "genre_delete_wtf.html"
-            form_delete.nom_genre_delete_wtf.data = data_nom_genre["intitule_genre"]
-
-            # Le bouton pour l'action "DELETE" dans le form. "genre_delete_wtf.html" est caché.
             btn_submit_del = False
 
     except Exception as Exception_genre_delete_wtf:
@@ -298,4 +312,4 @@ def genre_delete_wtf():
     return render_template("genres/genre_delete_wtf.html",
                            form_delete=form_delete,
                            btn_submit_del=btn_submit_del,
-                           data_films_associes=data_films_attribue_genre_delete)
+                           data_credentials_associated_person_delete=data_credentials_associated_person_delete)
