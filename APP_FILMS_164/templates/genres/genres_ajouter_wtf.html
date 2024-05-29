@@ -12,15 +12,6 @@
 				{{ form.hidden_tag() }}
 				<div class="form-group">
 					<p>
-						{{ form.id_role_wtf.label }}<br>
-						{{ form.id_role_wtf(size=32) }}<br>
-						{% for error in form.id_role_wtf.errors %}
-							<span style="color: red;">[{{ error }}]</span>
-						{% endfor %}
-					</p>
-				</div>
-				<div class="form-group">
-					<p>
 						{{ form.Nom_wtf.label }}<br>
 						{{ form.Nom_wtf(size=32) }}<br>
 						{% for error in form.Nom_wtf.errors %}
@@ -33,24 +24,6 @@
 						{{ form.Prenom_wtf.label }}<br>
 						{{ form.Prenom_wtf(size=32) }}<br>
 						{% for error in form.Prenom_wtf.errors %}
-							<span style="color: red;">[{{ error }}]</span>
-						{% endfor %}
-					</p>
-				</div>
-				<div class="form-group">
-					<p>
-						{{ form.Mail_wtf.label }}<br>
-						{{ form.Mail_wtf(size=32) }}<br>
-						{% for error in form.Mail_wtf.errors %}
-							<span style="color: red;">[{{ error }}]</span>
-						{% endfor %}
-					</p>
-				</div>
-				<div class="form-group">
-					<p>
-						{{ form.Password_wtf.label }}<br>
-						{{ form.Password_wtf(size=32) }}<br>
-						{% for error in form.Password_wtf.errors %}
 							<span style="color: red;">[{{ error }}]</span>
 						{% endfor %}
 					</p>
