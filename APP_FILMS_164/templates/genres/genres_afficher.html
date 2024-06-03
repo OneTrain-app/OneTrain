@@ -12,16 +12,13 @@
                 <thead>
                     <tr>
                         <th class="align-middle">
-                            Nom
+                            Id
                         </th>
                         <th class="align-middle">
                             Prénom
                         </th>
                         <th class="align-middle">
-                            Mot de passe
-                        </th>
-                        <th class="align-middle">
-                            Email
+                            Nom
                         </th>
                     </tr>
                 </thead>
@@ -31,25 +28,22 @@
                 <tbody>
                     <tr>
                         <td class="align-middle">
-                            {{ row.Nom }}
+                            {{ row.ID_Personne }}
                         </td>
                         <td class="align-middle">
                             {{ row.Prenom }}
                         </td>
                         <td class="align-middle">
-                            {{ row.Password }}
-                        </td>
-                        <td class="align-middle">
-                            {{ row.Email }}
+                            {{ row.Nom }}
                         </td>
                         <td class="text-center" class="align-middle">
                             <a class="btn btn-primary" href="{{ url_for('genres_ajouter_wtf') }}" role="button">Ajouter</a>
                         </td>
                         <td class="text-center" class="align-middle">
-                            <a class="btn btn-warning" href="{{ url_for('genre_update_wtf', id_genre_btn_edit_html=row.id_genre) }}" role="button">Modifier</a>
+                            <a class="btn btn-warning" href="{{ url_for('genre_update_wtf', id_genre_btn_edit_html=row.id_genre) }}" role="button">Edit</a>
                         </td>
                         <td class="text-center" class="align-middle">
-                            <a class="btn btn-danger" href="{{ url_for('genre_delete_wtf', id_genre_btn_delete_html=row.id_genre) }}" role="button">Delete</a>
+                            <a class="btn btn-danger" href="{{ url_for('genre_delete_wtf', id_genre_btn_delete_html=row.ID_Personne) }}" role="button">Delete</a>
                         </td>
                     </tr>
                 </tbody>

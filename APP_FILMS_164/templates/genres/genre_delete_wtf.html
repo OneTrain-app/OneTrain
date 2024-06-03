@@ -7,7 +7,7 @@
             <h3>Effacer une Personne</h3>
             <form action="" method="POST" novalidate>
                 {{ form_delete.hidden_tag() }}
-                <div class="form-group">
+                <div class="form-group">q
                     {{ form_delete.nom_genre_delete_wtf.label }}<br>
                     {{ form_delete.nom_genre_delete_wtf(size=32) }}<br>
                 </div>
@@ -19,13 +19,6 @@
                                 <th>FILM(S)</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for row in data_films_associes %}
-                                <tr>
-                                    <td>{{ row.nom_film }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
                     </table>
                 {% else %}
                     <h4>Ce genre n'est associé à aucun film.</h4>
