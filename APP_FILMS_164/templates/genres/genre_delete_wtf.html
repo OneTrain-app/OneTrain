@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} Effacer un genre (WTF) {% endblock %}
+{% block title %} Effacer une Personne {% endblock %}
 {% block body %}
 <div class="container">
     <div class="row">
@@ -7,7 +7,7 @@
             <h3>Effacer une Personne</h3>
             <form action="" method="POST" novalidate>
                 {{ form_delete.hidden_tag() }}
-                <div class="form-group">q
+                <div class="form-group">
                     {{ form_delete.nom_genre_delete_wtf.label }}<br>
                     {{ form_delete.nom_genre_delete_wtf(size=32) }}<br>
                 </div>
@@ -19,6 +19,13 @@
                                 <th>FILM(S)</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            {% for film in data_films_associes %}
+                            <tr>
+                                <td>{{ film.Nom }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
                     </table>
                 {% else %}
                     <h4>Ce genre n'est associé à aucun film.</h4>
