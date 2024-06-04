@@ -98,10 +98,12 @@ class ExceptionGenresAjouterWtf(Base):
 class ExceptionFilmsGenresAfficher(Base):
     pass
 
-
 class ExceptionEditGenreFilmSelected(Base):
     pass
 
+class ExceptionCredentialsAfficher(Exception):
+    """Exception lors de l'affichage des credentials"""
+    pass
 
 class ExceptionUpdateGenreFilmSelected(Base):
     pass

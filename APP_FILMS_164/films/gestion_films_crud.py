@@ -8,47 +8,58 @@ from flask import redirect
 from flask import request
 from flask import session
 from flask import url_for
+from flask import render_template, flash
 
 from APP_FILMS_164.database.database_tools import DBconnection
 from APP_FILMS_164.erreurs.exceptions import *
 from APP_FILMS_164.films.gestion_films_wtf_forms import FormWTFUpdateFilm, FormWTFAddFilm, FormWTFDeleteFilm
 
-"""Ajouter un film grâce au formulaire "film_add_wtf.html"
-Auteur : OM 2022.04.11
-Définition d'une "route" /film_add
+@app.route("/films_afficher", methods=['GET', 'POST'])
+def credentials_afficher():
+    try:
+        with DBconnection() as mc_afficher:
+            strsql_afficher = """SELECT * FROM T_Credentials"""
+            mc_afficher.execute(strsql_afficher)
+            data = mc_afficher.fetchall()
+            print("data ", data)
 
-Test : exemple: cliquer sur le menu "Films/Genres" puis cliquer sur le bouton "ADD" d'un "film"
+            if not data:
+                flash("""La table "T_Credentials" est vide. Rien à afficher""", "warning")
+            else:
+                flash(f"Données de la table 'T_Credentials' affichées", "success")
 
-Paramètres : sans
+            return render_template("films/credentials_afficher.html", data=data)
 
+    except Exception as Exception_credentials_afficher:
+        raise ExceptionCredentialsAfficher(f"fichier : {Path(__file__).name}  ;  "
+                                           f"{credentials_afficher.__name__} ; "
+                                           f"{Exception_credentials_afficher}")
 
-Remarque :  Dans le champ "nom_film_update_wtf" du formulaire "films/films_update_wtf.html",
-            le contrôle de la saisie s'effectue ici en Python dans le fichier ""
-            On ne doit pas accepter un champ vide.
-"""
-
+# ... (le reste du code)
 
 @app.route("/film_add", methods=['GET', 'POST'])
 def film_add_wtf():
-    # Objet formulaire pour AJOUTER un film
+    # Objet formulaire pour AJOUTER un credential
     form_add_film = FormWTFAddFilm()
     if request.method == "POST":
         try:
             if form_add_film.validate_on_submit():
-                nom_film_add = form_add_film.nom_film_add_wtf.data
+                email_add = form_add_film.nom_film_add_wtf.data
+                password_add = form_add_film.prenom_film_add_wtf.data
 
-                valeurs_insertion_dictionnaire = {"value_nom_film": nom_film_add}
+                valeurs_insertion_dictionnaire = {"value_email": email_add, "value_password": password_add}
                 print("valeurs_insertion_dictionnaire ", valeurs_insertion_dictionnaire)
 
-                strsql_insert_film = """INSERT INTO t_film (id_film,nom_film) VALUES (NULL,%(value_nom_film)s) """
+                strsql_insert_credential = """INSERT INTO T_Credentials (Email, Password) 
+                                                               VALUES (%(value_email)s, %(value_password)s) """
                 with DBconnection() as mconn_bd:
-                    mconn_bd.execute(strsql_insert_film, valeurs_insertion_dictionnaire)
+                    mconn_bd.execute(strsql_insert_credential, valeurs_insertion_dictionnaire)
 
                 flash(f"Données insérées !!", "success")
                 print(f"Données insérées !!")
 
-                # Pour afficher et constater l'insertion du nouveau film (id_film_sel=0 => afficher tous les films)
-                return redirect(url_for('films_genres_afficher', id_film_sel=0))
+                # Pour afficher et constater l'insertion du nouveau credential
+                return redirect(url_for('films_genres_afficher', id_film_sel=0, order_by='ASC'))
 
         except Exception as Exception_genres_ajouter_wtf:
             raise ExceptionGenresAjouterWtf(f"fichier : {Path(__file__).name}  ;  "
@@ -56,7 +67,6 @@ def film_add_wtf():
                                             f"{Exception_genres_ajouter_wtf}")
 
     return render_template("films/film_add_wtf.html", form_add_film=form_add_film)
-
 
 """Editer(update) un film qui a été sélectionné dans le formulaire "films_genres_afficher.html"
 Auteur : OM 2022.04.11
