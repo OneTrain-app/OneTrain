@@ -223,10 +223,9 @@ def credentials_update_wtf():
 """
 
 
-
 @app.route("/credentials_delete", methods=['GET', 'POST'])
 def credentials_delete_wtf():
-    data_films_attribue_credentials_delete = None
+    data_credentials_delete = None
     btn_submit_del = None
     id_credentials_delete = request.values.get('id_credentials_btn_delete_html')
 
@@ -237,58 +236,61 @@ def credentials_delete_wtf():
                 return redirect(url_for("credentials_afficher", order_by="ASC", id_credentials_sel=0))
 
             if form_delete.submit_btn_conf_del.data:
-                data_films_attribue_credentials_delete = session.get('data_films_attribue_credentials_delete')
-                flash(f"Effacer le credentials de façon définitive de la BD !!!", "danger")
+                data_credentials_delete = session.get('data_credentials_delete')
+                flash(f"Effacer les credentials de façon définitive de la BD !!!", "danger")
                 btn_submit_del = True
 
             if form_delete.submit_btn_del.data:
                 valeur_delete_dictionnaire = {"value_id_credentials": id_credentials_delete}
 
-                str_sql_delete_films_credentials = """DELETE FROM T_Personne_Credentials WHERE FK_Personne = %(value_id_credentials)s"""
-                str_sql_delete_idcredentials = """DELETE FROM T_Personne WHERE ID_Personne = %(value_id_credentials)s"""
+                # Supprimer d'abord les entrées dans T_Personne_Role qui référencent T_Personne
+                str_sql_delete_personne_role = """DELETE FROM T_Personne_Role WHERE FK_Personne = %(value_id_credentials)s"""
                 with DBconnection() as mconn_bd:
-                    mconn_bd.execute(str_sql_delete_films_credentials, valeur_delete_dictionnaire)
+                    mconn_bd.execute(str_sql_delete_personne_role, valeur_delete_dictionnaire)
+
+                # Supprimer ensuite les entrées dans T_Personne_Credentials qui référencent T_Credentials
+                str_sql_delete_personne_credentials = """DELETE FROM T_Personne_Credentials WHERE FK_Credentials = %(value_id_credentials)s"""
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(str_sql_delete_personne_credentials, valeur_delete_dictionnaire)
+
+                # Supprimer ensuite les entrées dans T_Personne qui référencent T_Credentials
+                str_sql_delete_personne = """DELETE FROM T_Personne WHERE ID_Credentials = %(value_id_credentials)s"""
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(str_sql_delete_personne, valeur_delete_dictionnaire)
+
+                # Ensuite, supprimer les entrées dans T_Credentials
+                str_sql_delete_idcredentials = """DELETE FROM T_Credentials WHERE ID_Credentials = %(value_id_credentials)s"""
+                with DBconnection() as mconn_bd:
                     mconn_bd.execute(str_sql_delete_idcredentials, valeur_delete_dictionnaire)
 
-                flash(f"credentials définitivement effacé !!", "success")
+                flash(f"Credentials définitivement effacés !!", "success")
                 return redirect(url_for('credentials_afficher', order_by="ASC", id_credentials_sel=0))
 
         if request.method == "GET":
             valeur_select_dictionnaire = {"value_id_credentials": id_credentials_delete}
 
-            str_sql_credentials_films_delete = """
-            SELECT ID_Personne_Credentials, Email, T_Credentials.ID_Credentials, Nom 
-            FROM T_Personne_Credentials 
-            INNER JOIN T_Credentials ON T_Personne_Credentials.FK_Credentials = T_Credentials.ID_Credentials 
-            INNER JOIN T_Personne ON T_Personne_Credentials.FK_Personne = T_Personne.ID_Personne 
-            WHERE FK_Personne = %(value_id_credentials)s
-            """
-
+            str_sql_credentials_delete = """SELECT ID_Credentials, Email, Password FROM T_Credentials 
+                                             WHERE ID_Credentials = %(value_id_credentials)s"""
             with DBconnection() as mydb_conn:
-                mydb_conn.execute(str_sql_credentials_films_delete, valeur_select_dictionnaire)
-                data_films_attribue_credentials_delete = mydb_conn.fetchall()
+                mydb_conn.execute(str_sql_credentials_delete, valeur_select_dictionnaire)
+                data_credentials_delete = mydb_conn.fetchone()
 
-                session['data_films_attribue_credentials_delete'] = data_films_attribue_credentials_delete
+                session['data_credentials_delete'] = data_credentials_delete
 
-                str_sql_id_credentials = "SELECT ID_Personne, Prenom FROM T_Personne WHERE ID_Personne = %(value_id_credentials)s"
-                mydb_conn.execute(str_sql_id_credentials, valeur_select_dictionnaire)
-                data_nom_credentials = mydb_conn.fetchone()
-
-            form_delete.nom_credentials_delete_wtf.data = data_nom_credentials["Prenom"]
+            form_delete.nom_credentials_delete_wtf.data = data_credentials_delete["Email"]
             btn_submit_del = False
 
     except Exception as e:
         print(f"Une erreur est survenue: {e}")
         flash(f"Erreur: {e}", "danger")
 
-    return render_template("films/films_delete_wtf.html",
+    return render_template("credentials/credentials_delete_wtf.html",
                            form_delete=form_delete,
                            btn_submit_del=btn_submit_del,
-                           data_films_associes=data_films_attribue_credentials_delete)
+                           data_credentials=data_credentials_delete)
 
 if __name__ == "__main__":
     app.run(debug=True)
-
 
 
 

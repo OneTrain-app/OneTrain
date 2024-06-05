@@ -23,20 +23,12 @@ class FormWTFAjoutercredentials(FlaskForm):
 
 class FormWTFUpdatecredentials(FlaskForm):
     email_credentials_update_wtf = StringField("Email", validators=[Length(min=2, max=20, message="min 2 max 40")])
-    password_credentials_update_wtf = StringField("Password", validators=[Length(min=2, max=20, message="min 2 max 20")])
+    password_credentials_update_wtf = StringField("Password", validators=[Length(min=2, max=20, message="min 2 max 40")])
     submit = SubmitField("Update")
 
 
 class FormWTFDeletecredentials(FlaskForm):
-    """
-        Dans le formulaire "credentials_delete_wtf.html"
-
-        nom_credentials_delete_wtf : Champ qui reçoit la valeur du credentials, lecture seule. (readonly=true)
-        submit_btn_del : Bouton d'effacement "DEFINITIF".
-        submit_btn_conf_del : Bouton de confirmation pour effacer un "credentials".
-        submit_btn_annuler : Bouton qui permet d'afficher la table "t_credentials".
-    """
-    nom_credentials_delete_wtf = StringField("Effacer ce credentials", render_kw={'readonly': True})
-    submit_btn_del = SubmitField("Effacer Définitivement")
-    submit_btn_conf_del = SubmitField("Confirmer l'Effacement")
+    nom_credentials_delete_wtf = StringField("Email", validators=[DataRequired()])
     submit_btn_annuler = SubmitField("Annuler")
+    submit_btn_conf_del = SubmitField("Confirmer la suppression")
+    submit_btn_del = SubmitField("Supprimer définitivement")
