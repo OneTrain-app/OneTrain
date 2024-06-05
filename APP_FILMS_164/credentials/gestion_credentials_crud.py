@@ -15,7 +15,6 @@ from APP_FILMS_164.erreurs.exceptions import *
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFAjoutercredentials
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFDeletecredentials
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFUpdatecredentials
-from APP_FILMS_164.films.gestion_films_wtf_forms import FormWTFUpdateFilm
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFDeletecredentials
 
 """
@@ -86,16 +85,16 @@ def credentials_ajouter_wtf():
     if request.method == "POST":
         try:
             if form.validate_on_submit():
-                prenom = form.Prenom_wtf.data
-                nom = form.Nom_wtf.data
+                email = form.Email_wtf.data
+                password = form.Password_wtf.data
 
                 # Insérer les données dans la table T_Personne
-                strsql_insert_personne = """INSERT INTO T_Personne (Prenom, Nom) 
-                            VALUES (%(prenom)s, %(nom)s)"""
+                strsql_insert_personne = """INSERT INTO T_Credentials (Email, Password) 
+                            VALUES (%(email)s, %(password)s)"""
 
                 valeurs_insertion_personne = {
-                    "prenom": prenom,
-                    "nom": nom
+                    "email": email,
+                    "password": password
                 }
                 with DBconnection() as mconn_bd:
                     mconn_bd.execute(strsql_insert_personne, valeurs_insertion_personne)
@@ -139,7 +138,7 @@ def credentials_update_wtf():
     id_credentials_update = request.values['id_credentials_btn_edit_html']
 
     # Création d'un objet formulaire pour l'UPDATE
-    form_update = FormWTFUpdateFilm()
+    form_update = FormWTFUpdatecredentials()
     try:
         # 2023.05.14 OM S'il y a des listes déroulantes dans le formulaire, 
         # la validation pose parfois des problèmes.

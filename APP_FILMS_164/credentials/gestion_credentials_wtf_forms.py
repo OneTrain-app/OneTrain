@@ -15,8 +15,8 @@ class FormWTFAjoutercredentials(FlaskForm):
         Dans le formulaire "credentials_ajouter_wtf.html" on impose que le champ soit rempli.
         Définition d'un "bouton" submit avec un libellé personnalisé.
     """
-    Nom_wtf = StringField("Nom", validators=[Length(min=2, max=20, message="min 2 max 20")])
-    Prenom_wtf = StringField("Prenom", validators=[Length(min=2, max=20, message="min 2 max 20")])
+    Email_wtf = StringField("Email", validators=[Length(min=2, max=20, message="min 2 max 40")])
+    Password_wtf = StringField("Password", validators=[Length(min=2, max=20, message="min 2 max 20")])
 
 
     submit = SubmitField("Enregistrer personne")
