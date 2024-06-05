@@ -21,24 +21,10 @@ class FormWTFAjoutercredentials(FlaskForm):
 
     submit = SubmitField("Enregistrer personne")
 
-
 class FormWTFUpdatecredentials(FlaskForm):
-    """
-        Formulaire pour mettre à jour le nom et le prénom d'une personne.
-    """
-    nom_credentials_update_regexp = "^([A-Z]|[a-zÀ-ÖØ-öø-ÿ])[A-Za-zÀ-ÖØ-öø-ÿ]*['\- ]?[A-Za-zÀ-ÖØ-öø-ÿ]+$"
-    nom_credentials_update_wtf = StringField("Clavioter le nom ", validators=[
-        Length(min=2, max=20, message="min 2 max 20"),
-        Regexp(nom_credentials_update_regexp, message="Pas de chiffres, de caractères spéciaux, d'espace à double, de double apostrophe, de double trait d'union")
-    ])
-    
-    date_credentials_wtf_essai_regexp = "^([A-Z]|[a-zÀ-ÖØ-öø-ÿ])[A-Za-zÀ-ÖØ-öø-ÿ]*['\- ]?[A-Za-zÀ-ÖØ-öø-ÿ]+$"
-    date_credentials_wtf_essai = StringField("Clavioter le prénom ", validators=[
-        Length(min=2, max=20, message="min 2 max 20"),
-        Regexp(date_credentials_wtf_essai_regexp, message="Pas de chiffres, de caractères spéciaux, d'espace à double, de double apostrophe, de double trait d'union")
-    ])
-    
-    submit = SubmitField("Update Personne")
+    email_credentials_update_wtf = StringField("Email", validators=[Length(min=2, max=20, message="min 2 max 40")])
+    password_credentials_update_wtf = StringField("Password", validators=[Length(min=2, max=20, message="min 2 max 20")])
+    submit = SubmitField("Update")
 
 
 class FormWTFDeletecredentials(FlaskForm):

@@ -143,29 +143,28 @@ def credentials_update_wtf():
         # 2023.05.14 OM S'il y a des listes déroulantes dans le formulaire, 
         # la validation pose parfois des problèmes.
         if request.method == "POST" and form_update.submit.data:
-            # Récupérer la valeur du champ "nom_credentials_update_wtf" depuis le formulaire "credentials_update_wtf.html"
-            # après avoir cliqué sur "SUBMIT". Puis convertir cette valeur en lettres minuscules.
-            name_credentials_update = form_update.nom_credentials_update_wtf.data
-            name_credentials_update = name_credentials_update.lower()
+            # Récupérer la valeur du champ "email_credentials_update_wtf" depuis le formulaire "credentials_update_wtf.html"
+            email_credentials_update = form_update.email_credentials_update_wtf.data
 
-            # Récupérer la valeur du champ "date_credentials_wtf_essai" depuis le formulaire.
-            date_credentials_essai = form_update.date_credentials_wtf_essai.data
+            # Récupérer la valeur du champ "password_credentials_update_wtf" depuis le formulaire.
+            password_credentials_update = form_update.password_credentials_update_wtf.data
 
             # Créer un dictionnaire pour les valeurs à mettre à jour
             valeur_update_dictionnaire = {
                 "value_id_credentials": id_credentials_update,
-                "value_name_credentials": name_credentials_update,
-                "value_date_credentials_essai": date_credentials_essai
+                "value_email_credentials": email_credentials_update,
+                "value_password_credentials": password_credentials_update
             }
             print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
 
             # Requête SQL pour mettre à jour les informations du credentials dans la base de données
-            str_sql_update_intitulecredentials = """UPDATE T_Personne SET Nom = %(value_name_credentials)s, 
-                                              Prenom = %(value_date_credentials_essai)s 
-                                              WHERE ID_Personne = %(value_id_credentials)s """
+            str_sql_update_credentials = """UPDATE T_Credentials 
+                                             SET Email = %(value_email_credentials)s, 
+                                                 Password = %(value_password_credentials)s 
+                                             WHERE ID_Credentials = %(value_id_credentials)s """
             # Exécution de la requête avec gestion automatique de la connexion à la base de données
             with DBconnection() as mconn_bd:
-                mconn_bd.execute(str_sql_update_intitulecredentials, valeur_update_dictionnaire)
+                mconn_bd.execute(str_sql_update_credentials, valeur_update_dictionnaire)
 
             # Affichage d'un message flash pour informer l'utilisateur que la mise à jour a été effectuée avec succès
             flash(f"Donnée mise à jour !!", "success")
@@ -176,8 +175,8 @@ def credentials_update_wtf():
 
         elif request.method == "GET":
             # Requête SQL pour récupérer les informations du credentials à partir de l'ID fourni
-            str_sql_id_credentials = """SELECT ID_Personne, Nom, Prenom FROM T_Personne 
-                                  WHERE ID_Personne = %(value_id_credentials)s"""
+            str_sql_id_credentials = """SELECT ID_Credentials, Email, Password FROM T_Credentials 
+                                        WHERE ID_Credentials = %(value_id_credentials)s"""
             valeur_select_dictionnaire = {"value_id_credentials": id_credentials_update}
 
             # Exécution de la requête avec gestion automatique de la connexion à la base de données
@@ -185,16 +184,16 @@ def credentials_update_wtf():
                 mybd_conn.execute(str_sql_id_credentials, valeur_select_dictionnaire)
 
                 # Récupération d'une seule ligne de résultat
-                data_nom_credentials = mybd_conn.fetchone()
+                data_credentials = mybd_conn.fetchone()
 
             # Vérifier que des données ont été retournées
-            if data_nom_credentials:
-                print("Prenom ", data_nom_credentials, " type ", type(data_nom_credentials), " credentials ",
-                      data_nom_credentials["Nom"])
+            if data_credentials:
+                print("Email ", data_credentials, " type ", type(data_credentials), " credentials ",
+                      data_credentials["Email"])
 
                 # Afficher la valeur sélectionnée dans les champs du formulaire "credentials_update_wtf.html"
-                form_update.nom_credentials_update_wtf.data = data_nom_credentials["Prenom"]
-                form_update.date_credentials_wtf_essai.data = data_nom_credentials["Nom"]
+                form_update.email_credentials_update_wtf.data = data_credentials["Email"]
+                form_update.password_credentials_update_wtf.data = data_credentials["Password"]
             else:
                 # Si aucune donnée n'est trouvée, afficher un message d'erreur et rediriger
                 flash(f"Erreur : Aucun enregistrement trouvé pour l'ID {id_credentials_update}", "danger")
@@ -203,12 +202,11 @@ def credentials_update_wtf():
     except Exception as Exception_credentials_update_wtf:
         # Gestion des exceptions et levée d'une exception personnalisée
         raise ExceptioncredentialsUpdateWtf(f"fichier : {Path(__file__).name}  ;  "
-                                      f"{credentials_update_wtf.__name__} ; "
-                                      f"{Exception_credentials_update_wtf}")
+                                            f"{credentials_update_wtf.__name__} ; "
+                                            f"{Exception_credentials_update_wtf}")
 
     # Rendu du template avec le formulaire de mise à jour
-    return render_template("films/films_update_wtf.html", form_update=form_update)
-
+    return render_template("credentials/credentials_update_wtf.html", form_update=form_update)
 
 """
     Auteur : OM 2021.04.08
