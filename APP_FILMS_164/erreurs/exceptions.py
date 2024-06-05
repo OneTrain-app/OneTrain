@@ -70,6 +70,12 @@ class DatabaseException(Base):
 class SqlException(DatabaseException):
     pass
 
+class ExceptionfilmsAfficher(DatabaseException):
+    pass
+
+class ExceptioncredentialsUpdateWtf(Base):
+    pass
+
 
 class SqlSyntaxError(SqlException):
     pass
@@ -99,6 +105,13 @@ class ExceptionFilmsGenresAfficher(Base):
     pass
 
 class ExceptionEditGenreFilmSelected(Base):
+    pass
+
+
+class ExceptioncredentialsAfficher(Base):
+    pass
+
+class Exceptionpersonne_credentialsAfficher(Base):
     pass
 
 class ExceptionCredentialsAfficher(Exception):
