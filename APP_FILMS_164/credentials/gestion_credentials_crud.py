@@ -536,8 +536,13 @@ def materiel_delete_wtf(id_materiel):
     if request.method == "POST":
         try:
             if form.validate_on_submit():
-                strsql_delete_materiel = """DELETE FROM T_Materiel WHERE ID_Materiel=%(id_materiel)s"""
                 with DBconnection() as mconn_bd:
+                    # Supprimer les entrées liées dans T_Commandes
+                    strsql_delete_commandes = """DELETE FROM T_Commandes WHERE ID_Materiel=%(id_materiel)s"""
+                    mconn_bd.execute(strsql_delete_commandes, {"id_materiel": id_materiel})
+
+                    # Ensuite, supprimer l'entrée dans T_Materiel
+                    strsql_delete_materiel = """DELETE FROM T_Materiel WHERE ID_Materiel=%(id_materiel)s"""
                     mconn_bd.execute(strsql_delete_materiel, {"id_materiel": id_materiel})
 
                 flash(f"Données supprimées !!", "success")
@@ -552,12 +557,11 @@ def materiel_delete_wtf(id_materiel):
                 mconn_bd.execute(strsql_select_materiel, {"id_materiel": id_materiel})
                 data_materiel = mconn_bd.fetchone()
 
-            form.nom_wtf.data = data_materiel["Nom"]
-            form.quantite_wtf.data = data_materiel["Quantite"]
-            form.description_wtf.data = data_materiel["Description"]
+            form.nom_materiel_delete_wtf.data = data_materiel["Nom"]
 
         except Exception as e:
             flash(f"Une erreur s'est produite : {str(e)}", "error")
 
     return render_template("materiel/materiel_delete_wtf.html", form=form)
+
 
