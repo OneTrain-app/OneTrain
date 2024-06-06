@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %} Afficher Personne {% endblock %}
+{% block title %}Afficher Matériel{% endblock %}
 {% block body %}
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <p>Credentials</p>
+            <h1>Matériel</h1>
             <table class="table table-bordered table-sm">
                 {% if data %}
                 <thead>
@@ -12,37 +12,33 @@
                         <th class="align-middle">Nom</th>
                         <th class="align-middle">Description</th>
                         <th class="align-middle">Quantité</th>
+                        <th class="align-middle">Actions</th>
                     </tr>
                 </thead>
-                {% endif %}
-
-                {% for row in data %}
                 <tbody>
+                {% for row in data %}
                     <tr>
                         <td class="align-middle">{{ row.Nom }}</td>
                         <td class="align-middle">{{ row.Description }}</td>
                         <td class="align-middle">{{ row.Quantite }}</td>
                         <td class="text-center align-middle">
-                            <a class="btn btn-primary" href="{{ url_for('credentials_ajouter_wtf') }}" role="button">Ajouter</a>
-                        </td>
-                        <td class="text-center align-middle">
-                            <a class="btn btn-warning" href="{{ url_for('credentials_update_wtf', id_credentials_btn_edit_html=row.ID_Credentials) }}" role="button">Edit</a>
-                        </td>
-                        <td class="text-center align-middle">
-                            <a class="btn btn-danger" href="{{ url_for('credentials_delete_wtf', id_credentials_btn_delete_html=row.ID_Credentials) }}" role="button">Delete</a>
+                            <a class="btn btn-primary" href="{{ url_for('materiel_ajouter_wtf') }}" role="button">Ajouter</a>
+                            <a class="btn btn-warning" href="{{ url_for('materiel_update_wtf', id_materiel=row.ID_Materiel) }}" role="button">Editer</a>
+                            <a class="btn btn-danger" href="{{ url_for('materiel_delete_wtf', id_materiel=row.ID_Materiel) }}" role="button">Supprimer</a>
                         </td>
                     </tr>
+                {% endfor %}
                 </tbody>
                 {% else %}
                 <tbody>
                     <tr>
-                        <td>Aucune personne.</td>
+                        <td colspan="3">Aucun matériel disponible.</td>
                         <td>
-                            <a class="btn btn-primary" href="{{ url_for('genres_ajouter_wtf') }}" role="button">Ajouter</a>
+                            <a class="btn btn-primary" href="{{ url_for('materiel_ajouter_wtf') }}" role="button">Ajouter</a>
                         </td>
                     </tr>
                 </tbody>
-                {% endfor %}
+                {% endif %}
             </table>
         </div>
     </div>

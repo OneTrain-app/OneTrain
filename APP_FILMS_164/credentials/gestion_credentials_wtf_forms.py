@@ -46,3 +46,31 @@ class FormWTFUpdateLiaison(FlaskForm):
     FK_Credentials_wtf = IntegerField("ID Credentials", validators=[DataRequired(), NumberRange(min=1, message="Veuillez entrer un ID valide.")])
     submit = SubmitField("Mettre à jour Liaison")
 
+class FormWTFAjouterMateriel(FlaskForm):
+    """
+        Formulaire pour ajouter du matériel avec WTF.
+    """
+    nom_wtf = StringField("Nom", validators=[DataRequired(), Length(min=1, max=100, message="Le nom doit contenir entre 1 et 100 caractères.")])
+    quantite_wtf = IntegerField("Quantité", validators=[DataRequired(), NumberRange(min=1, message="La quantité doit être positive.")])
+    description_wtf = StringField("Description", validators=[DataRequired(), Length(min=1, max=200, message="La description doit contenir entre 1 et 200 caractères.")])
+    submit = SubmitField("Ajouter le matériel")
+
+
+class FormWTFUpdateMateriel(FlaskForm):
+    """
+        Formulaire pour mettre à jour du matériel avec WTF.
+    """
+    nom_wtf = StringField("Nom", validators=[DataRequired(), Length(min=1, max=100, message="Le nom doit contenir entre 1 et 100 caractères.")])
+    quantite_wtf = IntegerField("Quantité", validators=[DataRequired(), NumberRange(min=1, message="La quantité doit être positive.")])
+    description_wtf = StringField("Description", validators=[DataRequired(), Length(min=1, max=200, message="La description doit contenir entre 1 et 200 caractères.")])
+    submit = SubmitField("Mettre à jour le matériel")
+
+
+class FormWTFDeleteMateriel(FlaskForm):
+    """
+        Formulaire pour supprimer du matériel avec WTF.
+    """
+    nom_materiel_delete_wtf = StringField("Nom du matériel", validators=[DataRequired()])
+    submit_btn_annuler = SubmitField("Annuler")
+    submit_btn_conf_del = SubmitField("Confirmer la suppression")
+    submit_btn_del = SubmitField("Supprimer définitivement")

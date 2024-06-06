@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Ajouter Matériel{% endblock %}
+{% block body %}
+<div class="container">
+    <h1>Ajouter Matériel</h1>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.nom_wtf.label(class="form-control-label") }}
+            {{ form.nom_wtf(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.quantite_wtf.label(class="form-control-label") }}
+            {{ form.quantite_wtf(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.description_wtf.label(class="form-control-label") }}
+            {{ form.description_wtf(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+</div>
+{% endblock %}

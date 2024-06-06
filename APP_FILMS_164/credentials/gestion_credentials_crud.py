@@ -18,6 +18,9 @@ from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFUpdat
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFDeletecredentials
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFAjouterLiaison
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFUpdateLiaison
+from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFAjouterMateriel
+from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFUpdateMateriel
+from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFDeleteMateriel
 
 """
     Auteur : OM 2021.03.16
@@ -425,6 +428,11 @@ def liaison_update_wtf():
                 )
 
     return render_template("credentials/personne_credentials_update_wtf.html", form_update=form_update, ID_Personne_Credentials=ID_Personne_Credentials_update)
+"""Gestion des "routes" FLASK et des données pour les matériels.
+Fichier : gestion_materiel_crud.py
+Auteur : OM 2021.03.16
+"""
+
 @app.route("/materiel_afficher/<string:order_by>/<int:id_materiel_sel>", methods=['GET', 'POST'])
 def materiel_afficher(order_by, id_materiel_sel):
     if request.method == "GET":
@@ -433,9 +441,9 @@ def materiel_afficher(order_by, id_materiel_sel):
                 strsql_materiel_afficher = """
                 SELECT ID_Materiel, Nom, Quantite, Description
                 FROM T_Materiel
-                """
+                ORDER BY ID_Materiel {}
+                """.format(order_by)
                 mc_afficher.execute(strsql_materiel_afficher)
-
                 data_materiel = mc_afficher.fetchall()
 
                 if not data_materiel:
@@ -449,4 +457,107 @@ def materiel_afficher(order_by, id_materiel_sel):
                                             f"{Exception_materiel_afficher}")
 
     return render_template("materiel/materiel_afficher.html", data=data_materiel)
+
+@app.route("/materiel_ajouter", methods=['GET', 'POST'])
+def materiel_ajouter_wtf():
+    form = FormWTFAjouterMateriel()
+    if request.method == "POST":
+        try:
+            if form.validate_on_submit():
+                nom = form.nom_wtf.data
+                quantite = form.quantite_wtf.data
+                description = form.description_wtf.data
+
+                strsql_insert_materiel = """INSERT INTO T_Materiel (Nom, Quantite, Description) 
+                                            VALUES (%(nom)s, %(quantite)s, %(description)s)"""
+
+                valeurs_insertion_materiel = {
+                    "nom": nom,
+                    "quantite": quantite,
+                    "description": description
+                }
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(strsql_insert_materiel, valeurs_insertion_materiel)
+
+                flash(f"Données insérées !!", "success")
+                return redirect(url_for('materiel_afficher', order_by='DESC', id_materiel_sel=0))
+
+        except Exception as e:
+            flash(f"Une erreur s'est produite : {str(e)}", "error")
+    return render_template("materiel/materiel_ajouter_wtf.html", form=form)
+
+@app.route("/materiel_update/<int:id_materiel>", methods=['GET', 'POST'])
+def materiel_update_wtf(id_materiel):
+    form = FormWTFUpdateMateriel()
+    if request.method == "POST":
+        try:
+            if form.validate_on_submit():
+                nom = form.nom_wtf.data
+                quantite = form.quantite_wtf.data
+                description = form.description_wtf.data
+
+                strsql_update_materiel = """UPDATE T_Materiel SET Nom=%(nom)s, Quantite=%(quantite)s, Description=%(description)s 
+                                            WHERE ID_Materiel=%(id_materiel)s"""
+
+                valeurs_update_materiel = {
+                    "nom": nom,
+                    "quantite": quantite,
+                    "description": description,
+                    "id_materiel": id_materiel
+                }
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(strsql_update_materiel, valeurs_update_materiel)
+
+                flash(f"Données mises à jour !!", "success")
+                return redirect(url_for('materiel_afficher', order_by='ASC', id_materiel_sel=0))
+
+        except Exception as e:
+            flash(f"Une erreur s'est produite : {str(e)}", "error")
+
+    elif request.method == "GET":
+        try:
+            strsql_select_materiel = """SELECT * FROM T_Materiel WHERE ID_Materiel=%(id_materiel)s"""
+            with DBconnection() as mconn_bd:
+                mconn_bd.execute(strsql_select_materiel, {"id_materiel": id_materiel})
+                data_materiel = mconn_bd.fetchone()
+
+            form.nom_wtf.data = data_materiel["Nom"]
+            form.quantite_wtf.data = data_materiel["Quantite"]
+            form.description_wtf.data = data_materiel["Description"]
+
+        except Exception as e:
+            flash(f"Une erreur s'est produite : {str(e)}", "error")
+
+    return render_template("materiel/materiel_update_wtf.html", form=form)
+
+@app.route("/materiel_delete/<int:id_materiel>", methods=['GET', 'POST'])
+def materiel_delete_wtf(id_materiel):
+    form = FormWTFDeleteMateriel()
+    if request.method == "POST":
+        try:
+            if form.validate_on_submit():
+                strsql_delete_materiel = """DELETE FROM T_Materiel WHERE ID_Materiel=%(id_materiel)s"""
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(strsql_delete_materiel, {"id_materiel": id_materiel})
+
+                flash(f"Données supprimées !!", "success")
+                return redirect(url_for('materiel_afficher', order_by='ASC', id_materiel_sel=0))
+
+        except Exception as e:
+            flash(f"Une erreur s'est produite : {str(e)}", "error")
+    elif request.method == "GET":
+        try:
+            strsql_select_materiel = """SELECT * FROM T_Materiel WHERE ID_Materiel=%(id_materiel)s"""
+            with DBconnection() as mconn_bd:
+                mconn_bd.execute(strsql_select_materiel, {"id_materiel": id_materiel})
+                data_materiel = mconn_bd.fetchone()
+
+            form.nom_wtf.data = data_materiel["Nom"]
+            form.quantite_wtf.data = data_materiel["Quantite"]
+            form.description_wtf.data = data_materiel["Description"]
+
+        except Exception as e:
+            flash(f"Une erreur s'est produite : {str(e)}", "error")
+
+    return render_template("materiel/materiel_delete_wtf.html", form=form)
 
