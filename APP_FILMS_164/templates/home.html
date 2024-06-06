@@ -1,20 +1,86 @@
 {% extends "base.html" %}
-{% block title %} Homepage FILMS {% endblock %}
+{% block title %} Homepage OneTrain {% endblock %}
 {% block body %}
-<div class="container-fluid">
+<div class="container-fluid" style="background: #363732;">
 	<div class="row">
 		<div class="col-md-12">
 			<h3>
-				Démo complète du 2023.03.25
+				OneTrain
 			</h3>
+			<p>
+				OneTrain est une application conçue pour les jeunes joueurs de football ainsi que pour leurs entraîneurs. Elle offre la possibilité de consulter le calendrier des prochains matchs et permet aux entraîneurs de gérer les événements ainsi que le matériel nécessaire pour les entraînements et les matchs.
+			</p>
 			<h3>
-				CRUD sur 3 tables autour des films et leurs genres associés<br>
+				Fonctionnalités
 			</h3>
 			<ul>
 				<li class="list-item">
-					Lire le readme.md
+					<strong>Calendrier des matchs :</strong> Les jeunes joueurs peuvent consulter facilement les dates, heures et lieux des prochains matchs de leur équipe.
+				</li>
+				<li class="list-item">
+					<strong>Gestion des événements :</strong> Les entraîneurs peuvent ajouter, modifier ou supprimer des événements tels que des entraînements, des matchs, des réunions, etc.
+				</li>
+				<li class="list-item">
+					<strong>Gestion du matériel :</strong> Les entraîneurs ont la possibilité de vérifier le matériel disponible et de passer des commandes pour les équipements nécessaires.
 				</li>
 			</ul>
+			<h3>
+				Comment utiliser
+			</h3>
+			<ul>
+				<li class="list-item">
+					<strong>Inscription/Connexion :</strong> Les utilisateurs doivent s'inscrire pour accéder à l'application en tant que joueur ou entraîneur.
+				</li>
+				<li class="list-item">
+					<strong>Calendrier :</strong> Une fois connectés, les joueurs peuvent consulter leur calendrier pour connaître les dates et les détails des prochains matchs.
+				</li>
+				<li class="list-item">
+					<strong>Gestion des événements :</strong> Les entraîneurs ont accès à des fonctionnalités supplémentaires pour gérer les événements tels que l'ajout, la modification ou la suppression.
+				</li>
+				<li class="list-item">
+					<strong>Gestion du matériel :</strong> Les entraîneurs peuvent vérifier le matériel disponible et passer des commandes si nécessaire.
+				</li>
+			</ul>
+			<h3>
+				Technologies utilisées
+			</h3>
+			<ul>
+				<li class="list-item">Frontend : HTML, CSS, JavaScript</li>
+				<li class="list-item">Backend : Python, Flask</li>
+				<li class="list-item">Base de données : MariaDB avec phpMyAdmin</li>
+			</ul>
+			<h3>
+				Installation
+			</h3>
+			<ol>
+				<li class="list-item">Clonez le repository : <code>git clone git@github.com:OneTrain-app/OneTrain.git OneTrain</code></li>
+				<li class="list-item">Accédez au projet : <code>cd OneTrain</code></li>
+				<li class="list-item">Désactivez git :
+					<ul>
+						<li class="list-item">Sur Linux/macOS : <code>rm -rf .git</code></li>
+						<li class="list-item">Sur Windows : <code>rmdir /s .git</code></li>
+					</ul>
+				</li>
+				<li class="list-item">Créez un environnement virtuel : <code>python3 -m venv .venv</code></li>
+				<li class="list-item">Activez l'environnement virtuel :
+					<ul>
+						<li class="list-item">Sur Linux/macOS : <code>source .venv/bin/activate</code></li>
+						<li class="list-item">Sur Windows : <code>.venv\Scripts\activate</code></li>
+					</ul>
+				</li>
+				<li class="list-item">Mettez à jour pip : <code>python -m pip install --upgrade pip</code></li>
+				<li class="list-item">Installez les dépendances : <code>pip install -r requirements.txt</code></li>
+				<li class="list-item">Pour lancer docker : <code>docker-compose up</code></li>
+			</ol>
+			<h3>
+				Contributeurs
+			</h3>
+			<p>José Gomes</p>
+			<h3>
+				Remarques
+			</h3>
+			<p>Ce projet est en cours de développement. Toute contribution est la bienvenue !</p>
+			<p>Pour toute question ou problème, veuillez ouvrir une issue sur GitHub.</p>
 		</div>
 	</div>
 </div>
