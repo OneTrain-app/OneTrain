@@ -16,7 +16,7 @@ from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFAjout
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFDeletecredentials
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFUpdatecredentials
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFDeletecredentials
-
+from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFAjouterLiaison
 """
     Auteur : OM 2021.03.16
     Définition d'une "route" /credentials_afficher
@@ -335,4 +335,27 @@ def personne_credentials_afficher(order_by, id_personne_credentials_sel):
 
     return render_template("credentials/personne_credentials_afficher.html", data=data_personne_credentials)
 
+@app.route("/liaison_ajouter", methods=['GET', 'POST'])
+def liaison_ajouter_wtf():
+    form = FormWTFAjouterLiaison()
+    if request.method == "POST":
+        try:
+            if form.validate_on_submit():
+                FK_Personne = form.FK_Personne.data
+                FK_Credentials = form.FK_Credentials.data
 
+                valeurs_insertion_dictionnaire = {"FK_Personne": FK_Personne, "FK_Credentials": FK_Credentials}
+
+                strsql_insert_liaison = """INSERT INTO T_Personne_Credentials (FK_Personne, FK_Credentials) VALUES (%(FK_Personne)s, %(FK_Credentials)s);"""
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(strsql_insert_liaison, valeurs_insertion_dictionnaire)
+
+                flash("Liaison ajoutée !!", "success")
+                return redirect(url_for('credentials_afficher', order_by='DESC', id_credentials_sel=0))
+
+        except Exception as Exception_liaison_ajouter_wtf:
+            raise ExceptionGenresAjouterWtf(f"fichier : {Path(__file__).name}  ;  "
+                                            f"{liaison_ajouter_wtf.__name__} ; "
+                                            f"{Exception_liaison_ajouter_wtf}")
+
+    return render_template("credentials/personne_credentials_ajouter_wtf.html", form=form)

@@ -6,7 +6,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField
 from wtforms import SubmitField
-from wtforms.validators import Length, InputRequired, DataRequired
+from wtforms.fields.numeric import IntegerField
+from wtforms.validators import Length, InputRequired, DataRequired, NumberRange
 from wtforms.validators import Regexp
 
 
@@ -32,3 +33,8 @@ class FormWTFDeletecredentials(FlaskForm):
     submit_btn_annuler = SubmitField("Annuler")
     submit_btn_conf_del = SubmitField("Confirmer la suppression")
     submit_btn_del = SubmitField("Supprimer définitivement")
+
+class FormWTFAjouterLiaison(FlaskForm):
+    FK_Personne= IntegerField("ID Personne", validators=[DataRequired(), NumberRange(min=1, message="Veuillez entrer un ID valide.")])
+    FK_Credentials = IntegerField("ID Credentials", validators=[DataRequired(), NumberRange(min=1, message="Veuillez entrer un ID valide.")])
+    submit = SubmitField("Ajouter Liaison")
