@@ -7,6 +7,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, DateField
 from wtforms import SubmitField
 from wtforms.fields.numeric import IntegerField
+from wtforms.fields.simple import HiddenField
 from wtforms.validators import Length, InputRequired, DataRequired, NumberRange
 from wtforms.validators import Regexp
 
@@ -38,3 +39,10 @@ class FormWTFAjouterLiaison(FlaskForm):
     FK_Personne= IntegerField("ID Personne", validators=[DataRequired(), NumberRange(min=1, message="Veuillez entrer un ID valide.")])
     FK_Credentials = IntegerField("ID Credentials", validators=[DataRequired(), NumberRange(min=1, message="Veuillez entrer un ID valide.")])
     submit = SubmitField("Ajouter Liaison")
+
+class FormWTFUpdateLiaison(FlaskForm):
+    ID_Personne_Credentials = IntegerField("ID Liaison", validators=[DataRequired()])
+    FK_Personne_wtf = IntegerField("ID Personne", validators=[DataRequired(), NumberRange(min=1, message="Veuillez entrer un ID valide.")])
+    FK_Credentials_wtf = IntegerField("ID Credentials", validators=[DataRequired(), NumberRange(min=1, message="Veuillez entrer un ID valide.")])
+    submit = SubmitField("Mettre à jour Liaison")
+

@@ -17,6 +17,8 @@ from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFDelet
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFUpdatecredentials
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFDeletecredentials
 from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFAjouterLiaison
+from APP_FILMS_164.credentials.gestion_credentials_wtf_forms import FormWTFUpdateLiaison
+
 """
     Auteur : OM 2021.03.16
     Définition d'une "route" /credentials_afficher
@@ -359,3 +361,67 @@ def liaison_ajouter_wtf():
                                             f"{Exception_liaison_ajouter_wtf}")
 
     return render_template("credentials/personne_credentials_ajouter_wtf.html", form=form)
+
+@app.route("/liaison_update", methods=['GET', 'POST'])
+def liaison_update_wtf():
+    form_update = FormWTFUpdateLiaison()
+
+    if request.method == "GET":
+        ID_Personne_Credentials_update = request.args.get('ID_Personne_Credentials')
+        if ID_Personne_Credentials_update:
+            # Charger les données existantes pour remplir le formulaire
+            str_sql_liaison = """SELECT ID_Personne_Credentials, FK_Personne, FK_Credentials 
+                                 FROM T_Personne_Credentials
+                                 WHERE ID_Personne_Credentials = %(value_ID_Personne_Credentials)s"""
+            valeur_select_dictionnaire = {"value_ID_Personne_Credentials": ID_Personne_Credentials_update}
+            try:
+                with DBconnection() as mybd_conn:
+                    mybd_conn.execute(str_sql_liaison, valeur_select_dictionnaire)
+                    data_liaison = mybd_conn.fetchone()
+
+                    if data_liaison:
+                        form_update.ID_Personne_Credentials.data = data_liaison["ID_Personne_Credentials"]
+                        form_update.FK_Personne_wtf.data = data_liaison["FK_Personne"]
+                        form_update.FK_Credentials_wtf.data = data_liaison["FK_Credentials"]
+                    else:
+                        flash(f"La liaison avec l'ID {ID_Personne_Credentials_update} n'existe pas.", "danger")
+                        return redirect(url_for('personne_credentials_afficher', order_by="ASC", id_personne_credentials_sel=0))
+            except Exception as Exception_liaison_update_wtf:
+                raise ExceptionGenreUpdateWtf(
+                    f"fichier : {Path(__file__).name}  ;  "
+                    f"{liaison_update_wtf.__name__} ; "
+                    f"{Exception_liaison_update_wtf}"
+                )
+
+    elif request.method == "POST":
+        ID_Personne_Credentials_update = form_update.ID_Personne_Credentials.data  # Récupérer l'ID depuis le champ caché
+        if not ID_Personne_Credentials_update:
+            flash("Aucun ID de liaison n'a été fourni pour la mise à jour.", "danger")
+            return redirect(url_for('personne_credentials_afficher', order_by="ASC", id_personne_credentials_sel=0))
+
+        if form_update.validate_on_submit():
+            FK_Personne = form_update.FK_Personne_wtf.data
+            FK_Credentials = form_update.FK_Credentials_wtf.data
+
+            valeur_update_dictionnaire = {
+                "ID_Personne_Credentials": ID_Personne_Credentials_update,
+                "FK_Personne": FK_Personne,
+                "FK_Credentials": FK_Credentials
+            }
+
+            str_sql_update_liaison = """UPDATE T_Personne_Credentials
+                                        SET FK_Personne = %(FK_Personne)s, FK_Credentials = %(FK_Credentials)s 
+                                        WHERE ID_Personne_Credentials = %(ID_Personne_Credentials)s"""
+            try:
+                with DBconnection() as mconn_bd:
+                    mconn_bd.execute(str_sql_update_liaison, valeur_update_dictionnaire)
+                flash("Liaison mise à jour !!", "success")
+                return redirect(url_for('personne_credentials_afficher', order_by="ASC", id_personne_credentials_sel=ID_Personne_Credentials_update))
+            except Exception as Exception_liaison_update_wtf:
+                raise ExceptionGenreUpdateWtf(
+                    f"fichier : {Path(__file__).name}  ;  "
+                    f"{liaison_update_wtf.__name__} ; "
+                    f"{Exception_liaison_update_wtf}"
+                )
+
+    return render_template("credentials/personne_credentials_update_wtf.html", form_update=form_update, ID_Personne_Credentials=ID_Personne_Credentials_update)
