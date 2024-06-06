@@ -120,6 +120,8 @@ class ExceptionCredentialsAfficher(Exception):
 
 class ExceptionUpdateGenreFilmSelected(Base):
     pass
+class ExceptionMaterielAfficher(Base):
+    pass
 
 
 class ExceptionGenresFilmsAfficherData(Base):

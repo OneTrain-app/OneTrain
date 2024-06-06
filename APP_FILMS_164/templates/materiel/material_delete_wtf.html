@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %} Effacer une Personne {% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Effacer une Personne</h3>
+            <h1>Delete Credentials</h1>
+    <form method="POST">
+        {{ form_delete.hidden_tag() }}
+        <p>
+            {{ form_delete.nom_credentials_delete_wtf.label }}<br>
+            {{ form_delete.nom_credentials_delete_wtf(size=32) }}<br>
+        </p>
+        <p>{{ form_delete.submit_btn_annuler() }}</p>
+        <p>{{ form_delete.submit_btn_conf_del() }}</p>
+        <p>{{ form_delete.submit_btn_del() }}</p>
+    </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

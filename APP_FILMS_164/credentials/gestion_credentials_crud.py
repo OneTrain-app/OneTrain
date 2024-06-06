@@ -425,3 +425,28 @@ def liaison_update_wtf():
                 )
 
     return render_template("credentials/personne_credentials_update_wtf.html", form_update=form_update, ID_Personne_Credentials=ID_Personne_Credentials_update)
+@app.route("/materiel_afficher/<string:order_by>/<int:id_materiel_sel>", methods=['GET', 'POST'])
+def materiel_afficher(order_by, id_materiel_sel):
+    if request.method == "GET":
+        try:
+            with DBconnection() as mc_afficher:
+                strsql_materiel_afficher = """
+                SELECT ID_Materiel, Nom, Quantite, Description
+                FROM T_Materiel
+                """
+                mc_afficher.execute(strsql_materiel_afficher)
+
+                data_materiel = mc_afficher.fetchall()
+
+                if not data_materiel:
+                    flash("La table est vide.", "warning")
+                else:
+                    flash("Voici le matériel disponible.", "success")
+
+        except Exception as Exception_materiel_afficher:
+            raise ExceptionMaterielAfficher(f"Archive: {Path(__file__).name}; "
+                                            f"{materiel_afficher.__name__}; "
+                                            f"{Exception_materiel_afficher}")
+
+    return render_template("materiel/materiel_afficher.html", data=data_materiel)
+
